@@ -7,17 +7,9 @@ from allennlp.data.instance import Instance
 from allennlp.data.token_indexers import SingleIdTokenIndexer, TokenIndexer
 from allennlp.data.tokenizers import Token, SpacyTokenizer
 
-import itertools
 
-
-def is_divider(line):
-    return line.strip() == ''
-
-
-@DatasetReader.register("conll_03_reader")
-class CoNLL03DatasetReader(DatasetReader):
-    # need to register this as a conll_03_reader even though this is a text reader
-    # todo figure out how to register two readers
+@DatasetReader.register("allennlp_raw_text_reader")
+class AllenNLPRawTextReader(DatasetReader):
     def __init__(self,
                  token_indexers: Dict[str, TokenIndexer] = None) -> None:
         super().__init__()
@@ -30,10 +22,6 @@ class CoNLL03DatasetReader(DatasetReader):
         with open(file_path, "r") as f:
             text = f.read()
             tokens = self.tokenizer.tokenize(text)
-            # text_field = TextField(self.tokenizer.tokenize(text),
-            #                        self.token_indexers)
-            # fields = {'text': text_field}
-            # yield Instance(fields)
 
             yield self.text_to_instance(tokens)
 
@@ -44,7 +32,6 @@ class CoNLL03DatasetReader(DatasetReader):
     @overrides
     def text_to_instance(self,
                          words: List[Token],
-                         ner_tags: List[str] = None
                          ) -> Instance:
         fields: Dict[str, Field] = {}
         # wrap each token in the file with a token object
@@ -53,6 +40,4 @@ class CoNLL03DatasetReader(DatasetReader):
         # Instances in AllenNLP are created using Python dictionaries,
         # which map the token key to the Field type
         fields["tokens"] = tokens
-        if ner_tags:
-            fields['label'] = LabelField(ner_tags)
         return Instance(fields)
