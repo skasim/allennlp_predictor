@@ -18,7 +18,7 @@ class AllenNLPRawTextReader(DatasetReader):
         super().__init__()
         self.tokenizer = SpacyTokenizer()
         self._token_indexers = token_indexers or {"elmo": ELMoTokenCharactersIndexer(),
-                                                  "token_characters": TokenCharactersIndexer(min_padding_length=4),
+                                                  "token_characters": TokenCharactersIndexer(),
                                                   "tokens": SingleIdTokenIndexer()}
 
     @overrides
